@@ -25,19 +25,20 @@ class _GameState extends State<Game> {
   ];
 
   Random random = Random();
-  late String symbol;
+  String symbol = 'X';
   bool gameOver = false;
-  late Players currentPlayer;
-  late String winner = '';
-  late bool showLine;
-  late Offset lineStart;
+  Players currentPlayer = Players.Player;
+  String winner = '';
+  // late bool showLine;
+  // late Offset lineStart;
 
-  @override
-  void initState() {
-    super.initState();
-    int firstPlayer = random.nextInt(1);
-    currentPlayer = Players.values[firstPlayer];
-  }
+  //@override
+  // void initState() {
+  //   super.initState();
+  //   int firstPlayer = random.nextInt(1);
+  //   currentPlayer = Players.values[firstPlayer];
+  //   symbol = currentPlayer == Players.Player ? 'X' : 'Y';
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,34 +86,32 @@ class _GameState extends State<Game> {
           ))
         : Scaffold(
             body: Center(
-              child: Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3),
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!gameOver && isBoardFull(boardState)) {
-                            makeMove(index);
-                            checkWinConditions();
-                          }
-                        },
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: CustomPaint(
-                            painter: BoardPainter(board: boardState),
-                            size: Size(100, 100),
-                          ),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (!gameOver && isBoardFull(boardState)) {
+                          makeMove(index);
+                          checkWinConditions();
+                        }
+                      },
+                      child: SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: CustomPaint(
+                          painter: BoardPainter(board: boardState),
+                          size: Size(100, 100),
                         ),
                       ),
-                    );
-                  },
-                  itemCount: 9,
-                ),
+                    ),
+                  );
+                },
+                itemCount: 9,
               ),
             ),
           );
