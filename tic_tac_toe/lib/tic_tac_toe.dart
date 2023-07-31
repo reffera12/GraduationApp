@@ -25,20 +25,20 @@ class _GameState extends State<Game> {
   ];
 
   Random random = Random();
-  String symbol = 'X';
   bool gameOver = false;
-  Players currentPlayer = Players.Player;
   String winner = '';
-  // late bool showLine;
+  late String symbol;
+  late Players currentPlayer;
+  //  late bool showLine;
   // late Offset lineStart;
 
-  //@override
-  // void initState() {
-  //   super.initState();
-  //   int firstPlayer = random.nextInt(1);
-  //   currentPlayer = Players.values[firstPlayer];
-  //   symbol = currentPlayer == Players.Player ? 'X' : 'Y';
-  // }
+  @override
+  void initState() {
+    super.initState();
+    int firstPlayer = random.nextInt(1);
+    currentPlayer = Players.values[firstPlayer];
+    symbol = currentPlayer == Players.Player ? 'X' : 'Y';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +96,10 @@ class _GameState extends State<Game> {
                     child: GestureDetector(
                       onTap: () {
                         if (!gameOver && isBoardFull(boardState)) {
-                          makeMove(index);
-                          checkWinConditions();
+                          setState(() {
+                            makeMove(index);
+                            checkWinConditions();
+                          });
                         }
                       },
                       child: SizedBox(
@@ -124,6 +126,7 @@ class _GameState extends State<Game> {
       [null, null, null],
     ];
     winner = '';
+    gameOver = false;
   }
 
   void makeMove(int index) {
