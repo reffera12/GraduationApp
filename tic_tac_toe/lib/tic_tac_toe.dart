@@ -25,65 +25,60 @@ class _GameState extends State<Game> {
   ];
 
   Random random = Random();
-  bool gameOver = false;
   String winner = '';
+  late bool gameOver;
   late String symbol;
   late Players currentPlayer;
   //  late bool showLine;
   // late Offset lineStart;
 
   @override
-  void initState() {
-    super.initState();
-    int firstPlayer = random.nextInt(1);
-    currentPlayer = Players.values[firstPlayer];
-    symbol = currentPlayer == Players.Player ? 'X' : 'Y';
-  }
-
-  @override
   Widget build(BuildContext context) {
     return gameOver
         ? Scaffold(
-            body: Center(
-            child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Container(
-                height: 50,
-                width: 200,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: AlertDialog(
-                  title: Text("Game Over"),
-                  content: Text(
-                    "$winner is the winner!",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: GoogleFonts.gluten().fontFamily,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: (Text("Back to menu")),
+            resizeToAvoidBottomInset: false,
+            body: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Container(
+                    height: 50,
+                    width: 200,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            restartGame();
-                          });
-                        },
-                        child: (Text("Replay"))),
-                  ],
+                    child: AlertDialog(
+                      title: Text("Game Over"),
+                      content: Text(
+                        "$winner is the winner!",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontFamily: GoogleFonts.gluten().fontFamily,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: (Text("Back to menu")),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              setState(() {
+                                restartGame();
+                              });
+                            },
+                            child: (Text("Replay"))),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ))
+            ))
         : Scaffold(
             body: Center(
               child: GridView.builder(
@@ -95,10 +90,12 @@ class _GameState extends State<Game> {
                   return Container(
                     child: GestureDetector(
                       onTap: () {
-                        if (!gameOver && isBoardFull(boardState)) {
+                        if (!gameOver && !isBoardFull(boardState)) {
                           setState(() {
                             makeMove(index);
-                            checkWinConditions();
+                            Future.delayed(Duration(seconds: 5), () {
+                              makeAiMove();
+                            });
                           });
                         }
                       },
@@ -119,6 +116,20 @@ class _GameState extends State<Game> {
           );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    int firstPlayer = random.nextInt(1);
+    currentPlayer = Players.values[firstPlayer];
+    symbol = currentPlayer == Players.Player ? 'X' : 'Y';
+    gameOver = false;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   restartGame() {
     boardState = [
       [null, null, null],
@@ -130,16 +141,13 @@ class _GameState extends State<Game> {
   }
 
   void makeMove(int index) {
-    if (currentPlayer == Players.AI) {
-      makeAiMove();
-    } else {
-      int row = index ~/ 3;
-      int col = index % 3;
-      if (boardState[row][col] == null) {
-        boardState[row][col] = symbol;
-      }
+    int row = index ~/ 3;
+    int col = index % 3;
+    if (boardState[row][col] == null) {
+      boardState[row][col] = symbol;
     }
     togglePlayer();
+    checkWinConditions();
   }
 
   togglePlayer() {
@@ -155,6 +163,8 @@ class _GameState extends State<Game> {
     int col = bestMove % 3;
 
     boardState[row][col] = symbol;
+    togglePlayer();
+    checkWinConditions();
   }
 
   void checkWinConditions() {
