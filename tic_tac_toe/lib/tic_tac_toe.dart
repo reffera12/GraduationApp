@@ -81,36 +81,43 @@ class _GameState extends State<Game> {
             ))
         : Scaffold(
             body: Center(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (!gameOver && !isBoardFull(boardState)) {
-                          setState(() {
-                            makeMove(index);
-                            Future.delayed(Duration(seconds: 5), () {
+              child: SizedBox(
+                width: 500,
+                height: 500,
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3),
+                  shrinkWrap: true,
+                  primary: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.grey,
+                      child: GestureDetector(
+                        onTap: () {
+                          print(currentPlayer);
+                          if (!gameOver && !isBoardFull(boardState)) {
+                            setState(() {
+                              makeMove(index);
                               makeAiMove();
                             });
-                          });
-                        }
-                      },
-                      child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CustomPaint(
-                          painter: BoardPainter(board: boardState),
-                          size: Size(100, 100),
+                          }
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: CustomPaint(
+                            painter: BoardPainter(board: boardState),
+                            size: Size(200, 200),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-                itemCount: 9,
+                    );
+                  },
+                  itemCount: 9,
+                ),
               ),
             ),
           );
@@ -119,9 +126,10 @@ class _GameState extends State<Game> {
   @override
   void initState() {
     super.initState();
-    int firstPlayer = random.nextInt(1);
+    int firstPlayer = random.nextInt(2);
     currentPlayer = Players.values[firstPlayer];
-    symbol = currentPlayer == Players.Player ? 'X' : 'Y';
+    symbol = currentPlayer == Players.Player ? 'X' : 'O';
+    print(symbol);
     gameOver = false;
   }
 
@@ -146,6 +154,8 @@ class _GameState extends State<Game> {
     if (boardState[row][col] == null) {
       boardState[row][col] = symbol;
     }
+    print(currentPlayer);
+    // print(symbol);
     togglePlayer();
     checkWinConditions();
   }
@@ -153,7 +163,7 @@ class _GameState extends State<Game> {
   togglePlayer() {
     currentPlayer =
         currentPlayer == Players.Player ? Players.AI : Players.Player;
-    symbol = currentPlayer == Players.Player ? 'X' : 'Y';
+    symbol = currentPlayer == Players.Player ? 'X' : 'O';
   }
 
   void makeAiMove() {
@@ -163,6 +173,8 @@ class _GameState extends State<Game> {
     int col = bestMove % 3;
 
     boardState[row][col] = symbol;
+    print(currentPlayer);
+    print(symbol);
     togglePlayer();
     checkWinConditions();
   }
@@ -213,6 +225,15 @@ class BoardPainter extends CustomPainter {
         final centerX = cellWidth * col + cellWidth / 2;
         final centerY = cellHeight * row + cellHeight / 2;
         final symbol = board[row][col];
+
+        final borderPaint = Paint()
+          ..color = Colors.black
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.0;
+
+        // Draw the outside border
+        canvas.drawRect(
+            Rect.fromLTWH(0, 0, size.width, size.height), borderPaint);
 
         if (symbol == 'X') {
           final symbolSize = cellWidth * 0.8;
