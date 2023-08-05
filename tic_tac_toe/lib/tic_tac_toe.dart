@@ -92,12 +92,14 @@ class _GameState extends State<Game> {
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Container(
-                      width: 100,
-                      height: 100,
+                      width: 1000,
+                      height: 1000,
                       color: Colors.grey,
                       child: GestureDetector(
                         onTap: () {
                           print(currentPlayer);
+                          print(gameOver);
+                          print(isBoardFull(boardState));
                           if (!gameOver && !isBoardFull(boardState)) {
                             setState(() {
                               makeMove(index);
@@ -191,7 +193,7 @@ class _GameState extends State<Game> {
   bool isBoardFull(List<List<String?>> board) {
     for (int r = 0; r < 3; r++) {
       for (int c = 0; c < 3; c++) {
-        if (board[r][c] == ' ') {
+        if (board[r][c] == null) {
           return false;
         }
       }
@@ -244,6 +246,7 @@ class BoardPainter extends CustomPainter {
               Offset(centerX + symbolSize / 2, centerY + symbolSize / 2);
 
           canvas.drawLine(startPoint, endPoint, xPaint);
+          canvas.drawLine(endPoint, startPoint, xPaint);
         }
 
         if (symbol == 'O') {
