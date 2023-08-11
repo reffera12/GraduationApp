@@ -5,18 +5,12 @@ class WinConditions {
         isDiagonalLine(board);
   }
 
-  bool isLine(List<List<String?>> board, {int index1 = 0, int index2 = 0}) {
-    if (board[index1][index2] == board[index1][index2 + 1] &&
-        board[index1][index2 + 1] == board[index1][index2 + 2] &&
-        board[index1][index2] != null) {
-      return true;
-    }
-    return false;
-  }
-
   bool isHorizontalLine(List<List<String?>> board) {
+    int c = 0;
     for (int r = 0; r < 3; r++) {
-      if (isLine(board, index1: r)) {
+      if (board[r][c] == board[r][c + 1] &&
+          board[r][c + 1] == board[r][c + 2] &&
+          board[r][c] != null) {
         return true;
       }
     }
@@ -24,8 +18,11 @@ class WinConditions {
   }
 
   bool isVerticalLine(List<List<String?>> board) {
+    int r = 0;
     for (int c = 0; c < 3; c++) {
-      if (isLine(board, index1: c)) {
+      if (board[r][c] == board[r + 1][c] &&
+          board[r + 1][c] == board[r + 2][c] &&
+          board[r][c] != null) {
         return true;
       }
     }

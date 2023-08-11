@@ -25,7 +25,7 @@ class _GameState extends State<Game> {
   ];
 
   Random random = Random();
-  String winner = '';
+  String winner = 'Player';
   late bool gameOver;
   late String symbol;
   late Players currentPlayer;
@@ -36,44 +36,50 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
     return gameOver
         ? Scaffold(
-            resizeToAvoidBottomInset: false,
             body: SingleChildScrollView(
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.all(4.0),
                   child: Container(
-                    height: 50,
-                    width: 200,
+                   
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: Colors.orange,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: AlertDialog(
-                      title: Text("Game Over"),
-                      content: Text(
-                        "$winner is the winner!",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontFamily: GoogleFonts.gluten().fontFamily,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: (Text("Back to menu")),
+                    child: SizedBox(
+                      height: 200,
+                      child: AlertDialog(
+                        title: Text("Game Over"),
+                        content:
+                        Column(
+                          children: [
+                            Text(
+                              "$winner is the winner!",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontFamily: GoogleFonts.gluten().fontFamily,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
-                        TextButton(
+                        actions: [
+                          TextButton(
                             onPressed: () {
-                              setState(() {
-                                restartGame();
-                              });
+                              Navigator.of(context).pop();
                             },
-                            child: (Text("Replay"))),
-                      ],
+                            child: (Text("Back to menu")),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  restartGame();
+                                });
+                              },
+                              child: (Text("Replay"))),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -82,45 +88,28 @@ class _GameState extends State<Game> {
         : Scaffold(
             body: Center(
               child: SizedBox(
-                width: 500,
-                height: 500,
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3),
-                  shrinkWrap: true,
-                  primary: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: 1000,
-                      height: 1000,
-                      color: Colors.grey,
-                      child: GestureDetector(
-                        onTap: () {
+                  width: 600,
+                  height: 600,
+                  child: Container(
+                    width: 600,
+                    height: 600,
+                    color: Colors.grey,
+                    child: GestureDetector(
+                      onTapDown: (TapDownDetails details) {
+                        var position = details.localPosition;
+                        setState(() {
+                          makeMove(position, Size(600, 600));
                           print(currentPlayer);
-                          print(gameOver);
-                          print(isBoardFull(boardState));
-                          if (!gameOver && !isBoardFull(boardState)) {
-                            setState(() {
-                              makeMove(index);
-                              makeAiMove();
-                            });
-                          }
-                        },
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: CustomPaint(
-                            painter: BoardPainter(board: boardState),
-                            size: Size(200, 200),
-                          ),
-                        ),
+
+                          makeAiMove();
+                        });
+                      },
+                      child: CustomPaint(
+                        painter: BoardPainter(board: boardState),
+                        size: Size(600, 600),
                       ),
-                    );
-                  },
-                  itemCount: 9,
-                ),
-              ),
+                    ),
+                  )),
             ),
           );
   }
@@ -131,8 +120,10 @@ class _GameState extends State<Game> {
     int firstPlayer = random.nextInt(2);
     currentPlayer = Players.values[firstPlayer];
     symbol = currentPlayer == Players.Player ? 'X' : 'O';
-    print(symbol);
-    gameOver = false;
+    if (currentPlayer == Players.AI) {
+      makeAiMove();
+    }
+    gameOver = true;
   }
 
   @override
@@ -150,15 +141,17 @@ class _GameState extends State<Game> {
     gameOver = false;
   }
 
-  void makeMove(int index) {
-    int row = index ~/ 3;
-    int col = index % 3;
+  void makeMove(Offset tapPosition, Size boardSize) {
+    final cellWidth = boardSize.width / 3;
+    final cellHeight = boardSize.height / 3;
+
+    int row = (tapPosition.dy / cellHeight).floor();
+    int col = (tapPosition.dx / cellWidth).floor();
+
     if (boardState[row][col] == null) {
       boardState[row][col] = symbol;
+      togglePlayer();
     }
-    print(currentPlayer);
-    // print(symbol);
-    togglePlayer();
     checkWinConditions();
   }
 
@@ -173,12 +166,13 @@ class _GameState extends State<Game> {
     int bestMove = ai.getBestMove(boardState);
     int row = bestMove ~/ 3;
     int col = bestMove % 3;
-
-    boardState[row][col] = symbol;
-    print(currentPlayer);
-    print(symbol);
-    togglePlayer();
-    checkWinConditions();
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        boardState[row][col] = symbol;
+        togglePlayer();
+        checkWinConditions();
+      });
+    });
   }
 
   void checkWinConditions() {
@@ -186,6 +180,9 @@ class _GameState extends State<Game> {
     if (winCon.checkForWin(boardState)) {
       togglePlayer();
       winner = currentPlayer.toString();
+      gameOver = true;
+    } else if (isBoardFull(boardState)) {
+      winner = "Draw!";
       gameOver = true;
     }
   }
@@ -198,6 +195,7 @@ class _GameState extends State<Game> {
         }
       }
     }
+    gameOver = true;
     return true;
   }
 }
@@ -222,31 +220,50 @@ class BoardPainter extends CustomPainter {
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
+    final borderPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0;
+    final linePaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 2.0;
+
+    // Draw vertical lines
+    for (int col = 1; col < 3; col++) {
+      final x = col * cellWidth;
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), linePaint);
+    }
+
+    // Draw horizontal lines
+    for (int row = 1; row < 3; row++) {
+      final y = row * cellHeight;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
+    }
+
+    // Draw the outside border
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), borderPaint);
+
     for (int row = 0; row < 3; row++) {
       for (int col = 0; col < 3; col++) {
         final centerX = cellWidth * col + cellWidth / 2;
         final centerY = cellHeight * row + cellHeight / 2;
         final symbol = board[row][col];
 
-        final borderPaint = Paint()
-          ..color = Colors.black
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3.0;
-
-        // Draw the outside border
-        canvas.drawRect(
-            Rect.fromLTWH(0, 0, size.width, size.height), borderPaint);
-
         if (symbol == 'X') {
           final symbolSize = cellWidth * 0.8;
 
-          final startPoint =
+          final startPoint1 =
               Offset(centerX - symbolSize / 2, centerY - symbolSize / 2);
-          final endPoint =
+          final endPoint1 =
               Offset(centerX + symbolSize / 2, centerY + symbolSize / 2);
 
-          canvas.drawLine(startPoint, endPoint, xPaint);
-          canvas.drawLine(endPoint, startPoint, xPaint);
+          final startPoint2 =
+              Offset(centerX - symbolSize / 2, centerY + symbolSize / 2);
+          final endPoint2 =
+              Offset(centerX + symbolSize / 2, centerY - symbolSize / 2);
+
+          canvas.drawLine(startPoint1, endPoint1, xPaint);
+          canvas.drawLine(startPoint2, endPoint2, xPaint);
         }
 
         if (symbol == 'O') {

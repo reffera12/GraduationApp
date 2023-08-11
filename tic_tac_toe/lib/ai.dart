@@ -29,7 +29,7 @@ class TicTacToeAI {
     for (int i = 0; i < board.length; i++) {
       int row = i ~/ 3;
       int col = i % 3;
-      if (board[row][col] != ' ') {
+      if (board[row][col] != null) {
         cellRank[i] -= 99;
       }
     }
@@ -41,19 +41,19 @@ class TicTacToeAI {
       int c = combo[2];
 
       if (board[a ~/ 3][a % 3] == board[b ~/ 3][b % 3]) {
-        if (board[a ~/ 3][a % 3] != ' ' && board[c ~/ 3][c % 3] == ' ') {
+        if (board[a ~/ 3][a % 3] != null && board[c ~/ 3][c % 3] == null) {
           cellRank[c] += 10;
         }
       }
 
       if (board[a ~/ 3][a % 3] == board[c ~/ 3][c % 3]) {
-        if (board[a ~/ 3][a % 3] != ' ' && board[b ~/ 3][b % 3] == ' ') {
+        if (board[a ~/ 3][a % 3] != null && board[b ~/ 3][b % 3] == null) {
           cellRank[b] += 10;
         }
       }
 
       if (board[b ~/ 3][b % 3] == board[c ~/ 3][c % 3]) {
-        if (board[b ~/ 3][b % 3] != ' ' && board[a ~/ 3][a % 3] == ' ') {
+        if (board[b ~/ 3][b % 3] != null && board[a ~/ 3][a % 3] == null) {
           cellRank[a] += 10;
         }
       }
@@ -67,7 +67,7 @@ class TicTacToeAI {
     for (int r = 0; r < 3; r++) {
       for (int c = 0; c < 3; c++) {
         int index = r * 3 + c;
-        if (cellRank[index] > highest && board[r][c] == ' ') {
+        if (cellRank[index] > highest && board[r][c] == null) {
           highest = cellRank[index];
           bestCell = index;
         }
