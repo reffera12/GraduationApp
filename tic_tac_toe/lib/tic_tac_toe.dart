@@ -126,7 +126,7 @@ class _GameState extends State<Game> {
     if (currentPlayer == Players.AI) {
       makeAiMove();
     }
-    gameOver = true;
+    gameOver = false;
   }
 
   @override
@@ -186,7 +186,7 @@ class _GameState extends State<Game> {
       gameOver = true;
     } else if (isBoardFull(boardState) && !winCon.checkForWin(boardState)) {
       winner = "Draw!";
-      gameOver = false;
+      gameOver = true;
     }
   }
 
