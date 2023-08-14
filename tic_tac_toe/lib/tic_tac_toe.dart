@@ -186,7 +186,7 @@ class _GameState extends State<Game> {
       gameOver = true;
     } else if (isBoardFull(boardState) && !winCon.checkForWin(boardState)) {
       winner = "Draw!";
-      gameOver = true;
+      gameOver = false;
     }
   }
 
