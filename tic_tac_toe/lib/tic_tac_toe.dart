@@ -25,7 +25,7 @@ class _GameState extends State<Game> {
   ];
 
   Random random = Random();
-  String winner = 'Player';
+  String winner = '';
   late bool gameOver;
   late String symbol;
   late Players currentPlayer;
@@ -37,54 +37,54 @@ class _GameState extends State<Game> {
     return gameOver
         ? Scaffold(
             body: SingleChildScrollView(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: Container(
-                   
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: SizedBox(
-                      height: 200,
-                      child: AlertDialog(
-                        title: Text("Game Over"),
-                        content:
-                        Column(
-                          children: [
-                            Text(
-                              "$winner is the winner!",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontFamily: GoogleFonts.gluten().fontFamily,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: (Text("Back to menu")),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: SizedBox(
+                    height: 200,
+                    child: AlertDialog(
+                      title: Text("Game Over"),
+                      content: Column(
+                        children: [
+                          Text(
+                            winner == "Draw"
+                                ? "$winner is the winner!"
+                                : "Draw!",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontFamily: GoogleFonts.gluten().fontFamily,
+                                fontWeight: FontWeight.bold),
                           ),
-                          TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  restartGame();
-                                });
-                              },
-                              child: (Text("Replay"))),
                         ],
                       ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: (Text("Back to menu")),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              setState(() {
+                                restartGame();
+                              });
+                            },
+                            child: (Text("Replay"))),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ))
+            ),
+          ))
         : Scaffold(
             body: Center(
               child: SizedBox(
@@ -97,12 +97,15 @@ class _GameState extends State<Game> {
                     child: GestureDetector(
                       onTapDown: (TapDownDetails details) {
                         var position = details.localPosition;
-                        setState(() {
-                          makeMove(position, Size(600, 600));
-                          print(currentPlayer);
-
-                          makeAiMove();
-                        });
+                        if (currentPlayer == Players.Player) {
+                          setState(() {
+                            makeMove(position, Size(600, 600));
+                            print(currentPlayer);
+                            if (!gameOver) makeAiMove();
+                          });
+                        } else {
+                          print("Please wait for your turn");
+                        }
                       },
                       child: CustomPaint(
                         painter: BoardPainter(board: boardState),
@@ -181,7 +184,7 @@ class _GameState extends State<Game> {
       togglePlayer();
       winner = currentPlayer.toString();
       gameOver = true;
-    } else if (isBoardFull(boardState)) {
+    } else if (isBoardFull(boardState) && !winCon.checkForWin(boardState)) {
       winner = "Draw!";
       gameOver = true;
     }
