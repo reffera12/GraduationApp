@@ -1,3 +1,5 @@
+import 'package:tic_tac_toe/wincond.dart';
+
 class TicTacToeAI {
   static const List<List<int>> winningCombos = [
     // Horizontal lines
@@ -17,6 +19,7 @@ class TicTacToeAI {
   List<List<String?>> board;
 
   TicTacToeAI(this.board);
+  WinConditions wincon = WinConditions();
 
   int getBestMove(List<List<String?>> board) {
     // Use a heuristic algorithm to determine the best play
@@ -31,6 +34,18 @@ class TicTacToeAI {
       int col = i % 3;
       if (board[row][col] != null) {
         cellRank[i] -= 99;
+      }
+    }
+
+    for (int i = 0; i < board.length; i++) {
+      int row = i ~/ 3;
+      int col = i % 3;
+      if (board[row][col] == null) {
+        board[row][col] = 'O'; // Assume AI's move
+        if (wincon.checkForWin(board)) {
+          return i; // Return the winning move
+        }
+        board[row][col] = null; // Reset the cell
       }
     }
 

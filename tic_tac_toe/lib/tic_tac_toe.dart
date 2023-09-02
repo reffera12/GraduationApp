@@ -29,15 +29,12 @@ class _GameState extends State<Game> {
   late bool gameOver;
   late String symbol;
   late Players currentPlayer;
-  //  late bool showLine;
-  // late Offset lineStart;
 
   @override
   Widget build(BuildContext context) {
     return gameOver
         ? Scaffold(
-            body: SingleChildScrollView(
-            child: Center(
+            body: Center(
               child: Padding(
                 padding: EdgeInsets.all(4.0),
                 child: Container(
@@ -51,9 +48,10 @@ class _GameState extends State<Game> {
                     child: AlertDialog(
                       title: Text("Game Over"),
                       content: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            winner == "Draw"
+                            winner != "Draw"
                                 ? "$winner is the winner!"
                                 : "Draw!",
                             style: TextStyle(
@@ -84,7 +82,7 @@ class _GameState extends State<Game> {
                 ),
               ),
             ),
-          ))
+          )
         : Scaffold(
             body: Center(
               child: SizedBox(
@@ -120,6 +118,15 @@ class _GameState extends State<Game> {
   @override
   void initState() {
     super.initState();
+    setUpGame();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void setUpGame() {
     int firstPlayer = random.nextInt(2);
     currentPlayer = Players.values[firstPlayer];
     symbol = currentPlayer == Players.Player ? 'X' : 'O';
@@ -129,19 +136,16 @@ class _GameState extends State<Game> {
     gameOver = false;
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  restartGame() {
-    boardState = [
-      [null, null, null],
-      [null, null, null],
-      [null, null, null],
-    ];
-    winner = '';
-    gameOver = false;
+  void restartGame() {
+    setState(() {
+      boardState = [
+        [null, null, null],
+        [null, null, null],
+        [null, null, null],
+      ];
+      winner = '';
+      setUpGame();
+    });
   }
 
   void makeMove(Offset tapPosition, Size boardSize) {
@@ -182,10 +186,10 @@ class _GameState extends State<Game> {
     WinConditions winCon = WinConditions();
     if (winCon.checkForWin(boardState)) {
       togglePlayer();
-      winner = currentPlayer.toString();
+      winner = currentPlayer.toString().split('.').last;
       gameOver = true;
-    } else if (isBoardFull(boardState) && !winCon.checkForWin(boardState)) {
-      winner = "Draw!";
+    } else if (isBoardFull(boardState) && winner == '') {
+      winner = 'Draw';
       gameOver = true;
     }
   }
@@ -198,7 +202,6 @@ class _GameState extends State<Game> {
         }
       }
     }
-    gameOver = true;
     return true;
   }
 }

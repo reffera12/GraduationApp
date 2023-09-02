@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/sudoku.dart';
 import 'package:tic_tac_toe/tic_tac_toe.dart';
 
 void main() {
@@ -16,7 +17,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),
-      home: Game(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Game(),
+        '/sudoku': (BuildContext context) => Sudoku(),
+      },
     );
   }
 }
