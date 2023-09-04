@@ -11,7 +11,6 @@ enum Players {
 }
 
 class Tic_Tac_Toe extends StatefulWidget {
-
   @override
   State<Tic_Tac_Toe> createState() => _Tic_Tac_ToeState();
 }
@@ -84,32 +83,47 @@ class _Tic_Tac_ToeState extends State<Tic_Tac_Toe> {
           )
         : Scaffold(
             body: Center(
-              child: SizedBox(
-                  width: 600,
-                  height: 600,
-                  child: Container(
-                    width: 600,
-                    height: 600,
-                    color: Colors.grey,
-                    child: GestureDetector(
-                      onTapDown: (TapDownDetails details) {
-                        var position = details.localPosition;
-                        if (currentPlayer == Players.Player) {
-                          setState(() {
-                            makeMove(position, Size(600, 600));
-                            print(currentPlayer);
-                            if (!gameOver) makeAiMove();
-                          });
-                        } else {
-                          print("Please wait for your turn");
-                        }
-                      },
-                      child: CustomPaint(
-                        painter: BoardPainter(board: boardState),
-                        size: Size(600, 600),
-                      ),
-                    ),
-                  )),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: SizedBox(
+                        width: 600,
+                        height: 600,
+                        child: Container(
+                          width: 600,
+                          height: 600,
+                          color: Colors.blueAccent,
+                          child: GestureDetector(
+                            onTapDown: (TapDownDetails details) {
+                              var position = details.localPosition;
+                              if (currentPlayer == Players.Player) {
+                                setState(() {
+                                  makeMove(position, Size(600, 600));
+                                  print(currentPlayer);
+                                  if (!gameOver) makeAiMove();
+                                });
+                              } else {
+                                print("Please wait for your turn");
+                              }
+                            },
+                            child: CustomPaint(
+                              painter: BoardPainter(board: boardState),
+                              size: Size(600, 600),
+                            ),
+                          ),
+                        )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("Back to menu")),
+                  ),
+                ],
+              ),
             ),
           );
   }
@@ -221,7 +235,7 @@ class BoardPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final oPaint = Paint()
-      ..color = Colors.blue
+      ..color = Colors.deepPurpleAccent
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 

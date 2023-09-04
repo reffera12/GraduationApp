@@ -25,7 +25,7 @@ class _FlipCardGameState extends State<FlipCardGame> {
   late bool _wait = false;
   late Level _level;
   late Timer _timer;
-  late int _time = 5;
+  late int _time;
   late int _left;
   late bool _isFinished;
   late List<String> _data;
@@ -36,7 +36,6 @@ class _FlipCardGameState extends State<FlipCardGame> {
   bool get isMounted => mounted;
 
   Widget getItem(int index) {
-    print(_data[index]);
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -50,7 +49,11 @@ class _FlipCardGameState extends State<FlipCardGame> {
             )
           ]),
       margin: EdgeInsets.all(4.0),
-      child: Image.asset(_data[index]),
+      child: Image.asset(
+        _data[index],
+        width: 80,
+        height: 80,
+      ),
     );
   }
 
@@ -69,11 +72,11 @@ class _FlipCardGameState extends State<FlipCardGame> {
     _data = getSource(_level);
     _cardFlips = getCardState(_level);
     _cardStateKeys = getCardKeys(_level);
-    _time = 5;
+    _time = 3;
     _left = _data.length ~/ 2;
 
     _isFinished = false;
-    Future.delayed(Duration(seconds: 6), () {
+    Future.delayed(Duration(seconds: 3), () {
       if (isMounted) {
         setState(() {
           _start = true;
@@ -98,135 +101,163 @@ class _FlipCardGameState extends State<FlipCardGame> {
   Widget build(BuildContext context) {
     return _isFinished
         ? Scaffold(
-            body: Center(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  restartGame();
-                });
-              },
-              child: Container(
-                height: 50,
-                width: 200,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  "Replay",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25,
-                      fontFamily: GoogleFonts.gluten().fontFamily,
-                      fontWeight: FontWeight.bold),
+            body: Column(
+            children: [
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      restartGame();
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      height: 50,
+                      width: 200,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Replay",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 25,
+                            fontFamily: GoogleFonts.gluten().fontFamily,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Container(
+                    height: 50,
+                    width: 200,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      "Back to menu",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 25,
+                          fontFamily: GoogleFonts.gluten().fontFamily,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ))
         : Scaffold(
             body: SafeArea(
               child: SingleChildScrollView(
-                  physics: NeverScrollableScrollPhysics(),
                   child: Column(
-                    children: <Widget>[
-                      Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: _time > 0
-                              ? Text("$_time remaining")
-                              : Text("$_left cards left")),
-                      Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                            ),
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) => _start
-                                ? FlipCard(
-                                    key: _cardStateKeys[index],
-                                    onFlip: () {
-                                      if (!_flip) {
-                                        _flip = true;
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: _time > 0
+                          ? Text("$_time remaining")
+                          : Text("$_left pairs left")),
+                  Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 6, childAspectRatio: 1),
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) => _start
+                            ? FlipCard(
+                                key: _cardStateKeys[index],
+                                onFlip: () {
+                                  if (!_flip) {
+                                    _flip = true;
+                                    _previousIndex = index;
+                                  } else {
+                                    _flip = false;
+                                  }
+                                  if (_previousIndex != index) {
+                                    if (_data[index] == _data[_previousIndex]) {
+                                      _cardFlips[_previousIndex] = false;
+                                      _cardFlips[index] = false;
+                                      if (isMounted) {
+                                        setState(() {
+                                          _left -= 1;
+                                        });
+                                      }
+                                      if (_cardFlips.every(
+                                          (element) => element == false)) {
+                                        setState(() {
+                                          _isFinished = true;
+                                          print(_isFinished);
+                                          _start = false;
+                                        });
+                                      }
+                                    } else {
+                                      _wait = true;
+                                      Future.delayed(
+                                          Duration(milliseconds: 1500), () {
+                                        _cardStateKeys[_previousIndex]
+                                            .currentState!
+                                            .toggleCard();
                                         _previousIndex = index;
-                                      } else {
-                                        _flip = false;
-                                      }
-                                      if (_previousIndex != index) {
-                                        if (_data[index] ==
-                                            _data[_previousIndex]) {
-                                          _cardFlips[_previousIndex] = false;
-                                          _cardFlips[index] = false;
-                                          if (isMounted) {
-                                            setState(() {
-                                              _left -= 1;
-                                            });
-                                          }
-                                          print(_cardFlips);
-                                          if (_cardFlips.every(
-                                              (element) => element == false)) {
-                                            setState(() {
-                                              Future.delayed(
-                                                  Duration(seconds: 1), (() {
-                                                _isFinished = true;
-                                                _start = false;
-                                              }));
-                                            });
-                                          }
-                                        } else {
-                                          _wait = true;
-                                          Future.delayed(
-                                              Duration(milliseconds: 1500), () {
-                                            _cardStateKeys[_previousIndex]
-                                                .currentState!
-                                                .toggleCard();
-                                            _previousIndex = index;
-                                            _cardStateKeys[_previousIndex]
-                                                .currentState!
-                                                .toggleCard();
-                                          });
-                                          Future.delayed(
-                                              Duration(milliseconds: 250), () {
-                                            setState(() {
-                                              _wait = false;
-                                            });
-                                          });
-                                        }
-                                      }
-                                      setState(() {});
-                                    },
-                                    flipOnTouch:
-                                        _wait ? false : _cardFlips[index],
-                                    direction: FlipDirection.HORIZONTAL,
-                                    front: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black45,
-                                              blurRadius: 3,
-                                              spreadRadius: 0.8,
-                                              offset: Offset(2.0, 1),
-                                            )
-                                          ]),
-                                      margin: EdgeInsets.all(4.0),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Image.asset(
-                                          "assets/background.jpg",
-                                        ),
-                                      ),
+                                        _cardStateKeys[_previousIndex]
+                                            .currentState!
+                                            .toggleCard();
+                                      });
+                                      Future.delayed(
+                                          Duration(milliseconds: 250), () {
+                                        setState(() {
+                                          _wait = false;
+                                        });
+                                      });
+                                    }
+                                  }
+                                  setState(() {});
+                                },
+                                flipOnTouch: _wait ? false : _cardFlips[index],
+                                direction: FlipDirection.HORIZONTAL,
+                                front: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black45,
+                                          blurRadius: 3,
+                                          spreadRadius: 0.8,
+                                          offset: Offset(2.0, 1),
+                                        )
+                                      ]),
+                                  margin: EdgeInsets.all(4.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.asset(
+                                      "assets/background.jpg",
+                                      width: 80,
+                                      height: 80,
                                     ),
-                                    back: getItem(index))
-                                : getItem(index),
-                            itemCount: _data.length,
-                          ))
-                    ],
-                  )),
+                                  ),
+                                ),
+                                back: getItem(index))
+                            : getItem(index),
+                        itemCount: _data.length,
+                      ))
+                ],
+              )),
             ),
           );
   }

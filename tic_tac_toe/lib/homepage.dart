@@ -11,23 +11,32 @@ class MainMenu extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GameButton(
-              text: 'Tic-Tac-Toe',
-              onPressed: () {
-                Navigator.pushNamed(context, '/tictactoe');
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GameButton(
+                text: 'Tic-Tac-Toe',
+                onPressed: () {
+                  Navigator.pushNamed(context, '/tictactoe');
+                },
+              ),
             ),
-            GameButton(
-              text: 'Sudoku',
-              onPressed: () {
-                Navigator.pushNamed(context, '/sudoku');
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GameButton(
+                text: 'Sudoku',
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sudoku');
+                },
+              ),
             ),
-            GameButton(
-              text: 'Memory Game',
-              onPressed: () {
-                Navigator.pushNamed(context, '/memory');
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GameButton(
+                text: 'Memory Game',
+                onPressed: () {
+                  Navigator.pushNamed(context, '/memory');
+                },
+              ),
             ),
           ],
         ),

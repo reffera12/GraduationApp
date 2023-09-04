@@ -66,6 +66,11 @@ class _SudokuState extends State<Sudoku> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Back to menu")),
                 Flexible(
                   flex: 3,
                   child: Padding(
