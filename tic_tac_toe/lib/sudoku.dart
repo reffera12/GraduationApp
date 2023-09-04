@@ -5,8 +5,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Sudoku extends StatefulWidget {
-  const Sudoku({super.key});
-
   @override
   State<Sudoku> createState() => _SudokuState();
 }

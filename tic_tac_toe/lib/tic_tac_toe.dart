@@ -10,14 +10,13 @@ enum Players {
   Player,
 }
 
-class Game extends StatefulWidget {
-  const Game({super.key});
+class Tic_Tac_Toe extends StatefulWidget {
 
   @override
-  State<Game> createState() => _GameState();
+  State<Tic_Tac_Toe> createState() => _Tic_Tac_ToeState();
 }
 
-class _GameState extends State<Game> {
+class _Tic_Tac_ToeState extends State<Tic_Tac_Toe> {
   List<List<String?>> boardState = [
     [null, null, null],
     [null, null, null],
