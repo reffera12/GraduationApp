@@ -1,4 +1,4 @@
-import 'package:tic_tac_toe/wincond.dart';
+import 'package:tic_tac_toe/tic_tac_toe/wincond.dart';
 
 class TicTacToeAI {
   static const List<List<int>> winningCombos = [

@@ -1,6 +1,6 @@
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/flipcardgame.dart';
+import 'package:tic_tac_toe/memory_game/flipcardgame.dart';
 
 List<String> fillImagesArray() {
   return [

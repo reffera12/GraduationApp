@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/homepage.dart';
 
-import 'sudoku.dart';
-import 'tic_tac_toe.dart';
-import 'memory_home.dart';
+import 'chess/chess.dart';
+import 'sudoku/sudoku.dart';
+import 'tic_tac_toe/tic_tac_toe.dart';
+import 'memory_game/memory_home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => MainMenu(),
         '/tictactoe': (context) => Tic_Tac_Toe(),
         '/sudoku': (context) => Sudoku(),
-        '/chess': (context) => Placeholder(),
+        '/chess': (context) => Chess(),
         '/memory': (context) => MemoryHomePage(),
       },
     );

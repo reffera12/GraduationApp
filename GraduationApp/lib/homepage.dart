@@ -38,6 +38,14 @@ class MainMenu extends StatelessWidget {
                 },
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GameButton(
+                  text: 'Chess',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/chess');
+                  }),
+            )
           ],
         ),
       ),

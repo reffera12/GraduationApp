@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tic_tac_toe/ai.dart';
-import 'package:tic_tac_toe/wincond.dart';
+import 'package:tic_tac_toe/tic_tac_toe/ai.dart';
+import 'package:tic_tac_toe/tic_tac_toe/wincond.dart';
 
 enum Players {
   AI,
@@ -261,7 +261,7 @@ class BoardPainter extends CustomPainter {
 
     // Draw the outside border
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), borderPaint);
-
+    //Draw the symbols
     for (int row = 0; row < 3; row++) {
       for (int col = 0; col < 3; col++) {
         final centerX = cellWidth * col + cellWidth / 2;
